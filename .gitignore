@@ -1,0 +1,9 @@
+MRI*
+__pycache__
+.vscode
+*.zip
+*.h5
+*.7z
+*ipynb_checkpoints
+.DS_Store
+
