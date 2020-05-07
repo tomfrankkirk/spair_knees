@@ -1,19 +1,11 @@
-import pydicom 
 import os.path as op 
-import glob 
-import numpy as np 
-import imageio as iio 
 from subprocess import run 
-import shutil
-import os 
-import re
 
 INDIR = 'MRI_png'
 OUTIDR = 'MRI_png_processed'
 
-crop = 40 
-frame_range = (2/36, 28/36)
-
+# crop = 40 
+# frame_range = (2/36, 28/36)
 # def extract_subs():
 #     dicoms = glob.glob(op.join('test_knees', 'dicom', '*.dcm'))
 #     subs = [ int(op.split(d)[1][4:8]) for d in dicoms ]
@@ -48,8 +40,6 @@ def make_masks():
                 cmd = f"labelme_json_to_dataset {f} -o {out}"
                 run(cmd, shell=True)
    
-def load_img_data():
-    pass
 
 if __name__ == "__main__":
     
