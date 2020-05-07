@@ -1,35 +1,34 @@
-# Brain segmentation U-network
-# Based on the work of 
-# Tom Kirk, 5/3/18
-
-# Dependencises
 import imageio as iio 
 import os.path as op 
-import glob 
 import numpy as np 
 from generate_unet import get_unet
-from keras.utils.np_utils import to_categorical
 from skimage.transform import resize 
-import keras 
-from image_generator import ImageGenerator, N_CLASSES, IMG_SHAPE
+from datasource import ImageGenerator, N_CLASSES, IMG_SHAPE, augmented_data, image_label_paths
+from datasource import AugmentedGenerator
 import tensorflow as tf 
 import os 
+import math 
 
 SPLIT = 0.8 
 INDIR = 'MRI_png_processed'    
-BATCH_SIZE = 10
+BATCH_SIZE = 6
+EPOCHS = 5
+EXPANSION_FACTOR = 2
+# CLASS_WEIGHTS = { 
+#     0: 0.2, 
+#     1: 1,  
+#     2: 0.5, 
+#     3: 0.5 }
 
-def image_label_paths():
+AUGMENT_ARGS = dict( 
+    horizontal_flip=True, 
+    vertical_flip=True, 
+    zoom_range=0.1, 
+    width_shift_range=0.1, 
+    height_shift_range=0.1,
+    samplewise_center=True, 
+    samplewise_std_normalization=True)
 
-    images = [] 
-    for sdir,_,files in os.walk(INDIR):
-        for f in files:
-            if f == 'img.png':
-                images.append(op.join(sdir, f))
-
-    images = sorted(images)
-    labels = [ op.join(op.dirname(f), 'label.png') for f in images ]
-    return images, labels 
 
 if __name__ == "__main__":
 
@@ -41,21 +40,30 @@ if __name__ == "__main__":
     session = tf.compat.v1.Session(config=config)
     # tf.debugging.set_log_device_placement(True)
 
-    images, labels = image_label_paths()
+    # Split into test and validation sets 
+    images, labels = image_label_paths(INDIR)
     partition = int(len(images) * SPLIT)
     images_train = images[:partition]
     labels_train = labels[:partition]
-    images_test = images[partition:]
-    labels_test = labels[partition:]
+    images_val = images[partition:]
+    labels_val = labels[partition:]
 
-    train_gen = ImageGenerator(images_train, labels_train, BATCH_SIZE) 
-    test_gen = ImageGenerator(images_test, labels_test, BATCH_SIZE)
+    # intitiailse generators on each set of data
+    train_gen = ImageGenerator(images_train, labels_train, BATCH_SIZE)
+    val_gen = ImageGenerator(images_val, labels_val, BATCH_SIZE) 
+    augmented_train = AugmentedGenerator(train_gen, EXPANSION_FACTOR, AUGMENT_ARGS)
+    augmented_val = AugmentedGenerator(val_gen, EXPANSION_FACTOR, AUGMENT_ARGS)
 
-    # Prepare network
     unet = get_unet(IMG_SHAPE, IMG_SHAPE, N_CLASSES)
     unet.summary()
 
-    # use_multiprocessing=True, workers=8
-    unet.fit_generator(generator=train_gen, validation_data=test_gen, 
-        epochs=10, verbose=1)
+    print(len(images), "samples, in", len(train_gen), "batches")
+    train_steps = len(train_gen) * EXPANSION_FACTOR
+    print("{} * {} = {} steps per epoch".format(len(train_gen), EXPANSION_FACTOR, train_steps))
+    val_steps = len(val_gen) * EXPANSION_FACTOR
+
+    unet.fit_generator(generator=augmented_train, validation_data=augmented_val,
+        epochs=EPOCHS, verbose=1, shuffle=True, steps_per_epoch=train_steps, 
+        use_multiprocessing=True, validation_steps=val_steps)
+
     unet.save('unet.h5')
