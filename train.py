@@ -11,9 +11,9 @@ import math
 
 SPLIT = 0.8 
 INDIR = 'MRI_png_processed'    
-BATCH_SIZE = 6
-EPOCHS = 5
-EXPANSION_FACTOR = 2
+BATCH_SIZE = 4
+EPOCHS = 20
+EXPANSION_FACTOR = 1
 # CLASS_WEIGHTS = { 
 #     0: 0.2, 
 #     1: 1,  
@@ -25,9 +25,8 @@ AUGMENT_ARGS = dict(
     vertical_flip=True, 
     zoom_range=0.1, 
     width_shift_range=0.1, 
-    height_shift_range=0.1,
-    samplewise_center=True, 
-    samplewise_std_normalization=True)
+    height_shift_range=0.1)
+
 
 
 if __name__ == "__main__":
@@ -63,7 +62,6 @@ if __name__ == "__main__":
     val_steps = len(val_gen) * EXPANSION_FACTOR
 
     unet.fit_generator(generator=augmented_train, validation_data=augmented_val,
-        epochs=EPOCHS, verbose=1, shuffle=True, steps_per_epoch=train_steps, 
-        use_multiprocessing=True, validation_steps=val_steps)
+        epochs=EPOCHS, verbose=1, shuffle=True, steps_per_epoch=train_steps, validation_steps=val_steps)
 
     unet.save('unet.h5')

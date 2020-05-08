@@ -9,13 +9,13 @@ from pdb import set_trace
 
 CROP = 40 # Crop in by this many voxels either side 
 IMG_SHAPE = (480, 480) # resize all images to this 
-N_CLASSES = 4 
+N_CLASSES = 3
 TISSUE_MAP = {
     'Mark': 1, 
     'vessel': 1, 
-    'bone': 2, 
-    'Tibia': 2, 
-    'other_tissue': 3,
+    'bone': 1, 
+    'Tibia': 1, 
+    'other_tissue': 2,
     '_background_': 0 
 }
 
@@ -91,7 +91,7 @@ class ImageGenerator(keras.utils.Sequence):
         for iidx,idx in enumerate(index_list):
             img = iio.imread(self.image_paths[idx])[CROP:-CROP, CROP:-CROP]
             img = resize(img, IMG_SHAPE, anti_aliasing=True) / img.max()
-            # img = (img - img.mean()) / img.std()
+            img = (img - img.mean()) / img.std()
             images[iidx,:,:,0] = img # + (-1 * img.min())
 
             lbl = iio.imread(self.label_paths[idx])[CROP:-CROP, CROP:-CROP, :]
