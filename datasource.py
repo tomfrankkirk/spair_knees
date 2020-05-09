@@ -9,10 +9,10 @@ from pdb import set_trace
 
 CROP = 40 # Crop in by this many voxels either side 
 IMG_SHAPE = (480, 480) # resize all images to this 
-N_CLASSES = 3
+N_CLASSES = 4
 TISSUE_MAP = {
-    'Mark': 1, 
-    'vessel': 1, 
+    'Mark': 3, 
+    'vessel': 3, 
     'bone': 1, 
     'Tibia': 1, 
     'other_tissue': 2,

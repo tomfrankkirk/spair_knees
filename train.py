@@ -11,9 +11,9 @@ import math
 
 SPLIT = 0.8 
 INDIR = 'MRI_png_processed'    
-BATCH_SIZE = 4
-EPOCHS = 20
-EXPANSION_FACTOR = 1
+BATCH_SIZE = 8
+EPOCHS = 30
+EXPANSION_FACTOR = 10
 # CLASS_WEIGHTS = { 
 #     0: 0.2, 
 #     1: 1,  
@@ -31,7 +31,7 @@ AUGMENT_ARGS = dict(
 
 if __name__ == "__main__":
 
-    config = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=14, 
+    config = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=16, 
                         inter_op_parallelism_threads=2, 
                         allow_soft_placement=True,
                         device_count = {'CPU': 16})
