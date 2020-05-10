@@ -12,13 +12,9 @@ import math
 SPLIT = 0.8 
 INDIR = 'MRI_png_processed'    
 BATCH_SIZE = 8
-EPOCHS = 30
-EXPANSION_FACTOR = 10
-# CLASS_WEIGHTS = { 
-#     0: 0.2, 
-#     1: 1,  
-#     2: 0.5, 
-#     3: 0.5 }
+EPOCHS = 20
+EXPANSION_FACTOR = 15
+
 
 AUGMENT_ARGS = dict( 
     horizontal_flip=True, 
