@@ -90,8 +90,8 @@ class ImageGenerator(keras.utils.Sequence):
 
         for iidx,idx in enumerate(index_list):
             img = iio.imread(self.image_paths[idx])[CROP:-CROP, CROP:-CROP]
-            img = resize(img, IMG_SHAPE, anti_aliasing=True) / img.max()
-            # img = (img - img.mean()) / img.std()
+            img = resize(img, IMG_SHAPE, anti_aliasing=True)
+            img = (img - img.mean()) / img.std()
             images[iidx,:,:,0] = img # + (-1 * img.min())
 
             lbl = iio.imread(self.label_paths[idx])[CROP:-CROP, CROP:-CROP, :]

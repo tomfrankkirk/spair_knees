@@ -12,8 +12,8 @@ import math
 SPLIT = 0.8 
 INDIR = 'MRI_png_processed'    
 BATCH_SIZE = 8
-EPOCHS = 20
-EXPANSION_FACTOR = 15
+EPOCHS = 30
+EXPANSION_FACTOR = 5
 
 
 AUGMENT_ARGS = dict( 
